@@ -1,0 +1,21 @@
+import type { SceneProps } from './types';
+const COLORS=[['#d58b83','#72b9b0'],['#a293c2','#d8ad69']];
+function Chromosome({x,y,replicated=false,parent=0,pair=0,sister=0,crossed=false,size=1}:{x:number;y:number;replicated?:boolean;parent?:number;pair?:number;sister?:number;crossed?:boolean;size?:number}) {
+  const base=COLORS[pair][parent],other=COLORS[pair][1-parent],sisters=replicated?[0,1]:[sister],h=(pair?22:31)*size,w=replicated?9*size:0;
+  return <g data-chromosome={replicated ? 'replicated' : 'single'} transform={`translate(${x} ${y})`} strokeWidth={7*size} strokeLinecap="round">{sisters.map(s=>{const offset=s?-w:w,exchange=crossed&&pair===0&&s===(parent===0?1:0);return <g key={s}><path d={`M${offset} ${-h}L0 0L${-offset*.65} ${h*.65}`} stroke={base}/><path d={`M${-offset*.65} ${h*.65}L${-offset} ${h}`} stroke={exchange?other:base}/></g>;})}<circle r={4*size} fill="#e9d9b9" stroke="none"/></g>;
+}
+function Cell({x,y,rx=84,ry=72}:{x:number;y:number;rx?:number;ry?:number}){return <ellipse cx={x} cy={y} rx={rx} ry={ry} fill="url(#diagram-tissue)" stroke="#829fbd" strokeWidth="2"/>;}
+export default function DiagramChromosomes({props}:{props:SceneProps}) {
+  const {moduleId,step,variant}=props;
+  if(moduleId==='BIO-013')return <><Cell x={380} y={250} rx={116} ry={125}/>{step<2?<Chromosome x={380} y={250} replicated={step===1} size={2.5}/>:[-1,1].map((side,i)=><Chromosome key={side} x={380+side*53} y={250} parent={0} size={2}/>)}<text x="380" y="412" textAnchor="middle" fill="#dbe7e7" fontSize="12">{step===0?'1 chromosome · 1 chromatid':step===1?'1 chromosome · 2 sister chromatids':'2 daughter chromosomes'}</text></>;
+  if(moduleId==='BIO-014') {
+    const interphase=step<3,divided=step===7,late=step>=5;
+    return <>{divided?[-1,1].map(side=><Cell key={side} x={380+side*69} y={250} rx={64} ry={109}/>):<Cell x={380} y={250} rx={143} ry={132}/>}
+      {interphase?Array.from({length:step===0?4:8},(_,i)=><path key={i} d={`M${330+(i%4)*30} 174q-33 24 0 49t0 49t0 49`} transform={i>=4?'translate(5 0)':undefined} opacity={i>=4&&step===1?.45:1} fill="none" stroke={i%4<2?COLORS[0][0]:COLORS[0][1]} strokeWidth="3" strokeDasharray={i>=4&&step===1?'5 5':undefined}/>):late?[-1,1].flatMap(side=>[0,1,2,3].map(i=><Chromosome key={`${side}${i}`} x={380+side*71+(i%2?15:-15)} y={217+Math.floor(i/2)*65} parent={i<2?0:1} size={.75}/>)):[0,1,2,3].map(i=><Chromosome key={i} x={step===3?345+(i%2)*68:380} y={step===3?207+Math.floor(i/2)*88:162+i*57} parent={i<2?0:1} replicated size={.72}/>)}
+      <text x="380" y="412" textAnchor="middle" fill="#dbe7e7" fontSize="11">{step===0?'2n = 4 · 2C':step===1?'S phase · 2C → 4C':step<5?'2n = 4 · 4C':step===5?'4 daughter chromosomes at each pole':step===6?'Each new nucleus: 2n = 4 · 2C':'Each daughter: 2n = 4 · 2C'}</text></>;
+  }
+  const orientation=variant==='orientation-b',postI=step>=5,final=step>=8;
+  return <>{!postI?<Cell x={380} y={250} rx={141} ry={128}/>:final?[-1,1].flatMap(side=>[-1,1].map(row=><Cell key={`${side}${row}`} x={380+side*68} y={250+row*67} rx={61} ry={59}/>)):[-1,1].map(side=><Cell key={side} x={380+side*69} y={250} rx={65} ry={116}/>)}
+    {!postI?[0,1].flatMap(pair=>[0,1].map(parent=><Chromosome key={`${pair}${parent}`} x={step<3?350+parent*62:380+(parent?1:-1)*(step===3?21:80)} y={203+pair*91} pair={pair} parent={pair===1&&orientation&&step>=3?1-parent:parent} replicated={step>0} crossed={step>=2} size={1.05}/>)):step<=6?[-1,1].flatMap(side=>[0,1].map(pair=><Chromosome key={`${side}${pair}`} x={380+side*69} y={209+pair*84} pair={pair} parent={pair===1&&orientation?(side<0?1:0):(side<0?0:1)} replicated crossed/>)):[-1,1].flatMap(side=>[0,1].flatMap(sister=>[0,1].map(pair=><Chromosome key={`${side}${sister}${pair}`} x={final?380+side*68+(pair?18:-18):380+side*69+(sister?22:-22)} y={final?250+(sister?67:-67):209+pair*84} pair={pair} parent={pair===1&&orientation?(side<0?1:0):(side<0?0:1)} sister={sister} crossed size={final?.85:.8}/>)))}
+    <text x="380" y="412" textAnchor="middle" fill="#dbe7e7" fontSize="11">{step===0?'Parent: 2n = 4 · 2C':step<5?'2 homologous pairs · 8 chromatids':step<7?'Each daughter set: n = 2 · 2C':step===7?'Each final pole: n = 2 · 1C':'Each product: n = 2 · 1C'}</text></>;
+}

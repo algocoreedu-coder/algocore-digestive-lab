@@ -17,3 +17,4 @@ body{margin:0}.ac-app.digestive-app{min-height:100vh}.digestive-app button,.dige
 .digestive-app .explorer-modebar{padding-top:6px;padding-bottom:6px}
 .digestive-app.classroom-mode .explorer-card-heading{display:none}
 @media(min-width:761px){.digestive-app.classroom-mode .digestive-stage{height:calc(100dvh - 230px);min-height:360px}}
+.al-primary-library-link{display:flex;align-items:center;gap:7px;color:#dce8f1;text-decoration:none;background:#304f67;padding:11px 10px;margin:0 0 22px;border-radius:7px;font:500 10px var(--ac-font-sans);min-height:42px}.al-primary-library-link svg:last-child{margin-left:auto}.al-primary-library-link:hover{background:#3b5e77}
