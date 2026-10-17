@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { MODULES, getSteps } from '../src/alevel/content.ts';
+import { MODULES, PRIORITY_MODULES, getSteps } from '../src/alevel/content.ts';
 import { meiosisChromosomes, cristaPoint } from '../src/alevel/biologyModel.ts';
 import { revealedBySelection, visible } from '../src/alevel/visibility.ts';
 
 test('the approved release has four AS and five additional A Level modules',()=>{
-  assert.deepEqual(MODULES.map(m=>m.id).sort(),['BIO-010','BIO-011','BIO-013','BIO-014','BIO-031','BIO-033','BIO-037','BIO-038','BIO-044']);
-  assert.equal(MODULES.filter(m=>m.level==='AS').length,4);
+  assert.deepEqual(PRIORITY_MODULES.map(m=>m.id).sort(),['BIO-010','BIO-011','BIO-013','BIO-014','BIO-031','BIO-033','BIO-037','BIO-038','BIO-044']);
+  assert.equal(PRIORITY_MODULES.filter(m=>m.level==='AS').length,4);
   for(const m of MODULES){const ids=m.structures.map(s=>s.id);assert.equal(new Set(ids).size,ids.length);for(const step of m.steps)for(const id of step.focus)assert.ok(ids.includes(id),`${m.id}: unknown focus ${id}`);assert.ok(m.question.answer>=0&&m.question.answer<m.question.options.length);}
 });
 test('passive transport follows its gradient; active transport opposes it',()=>{

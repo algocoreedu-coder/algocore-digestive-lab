@@ -4,6 +4,7 @@ import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { SceneProps } from './types';
 import { visible } from './visibility';
+import { WAVE2_IDS } from './catalog';
 export { visible } from './visibility';
 
 export type Point = [number, number, number];
@@ -17,7 +18,7 @@ export function Tube({ points, radius = .07, color, selected = false, opacity = 
   return <mesh geometry={geometry}><Surface color={color} selected={selected} opacity={opacity} /></mesh>;
 }
 export function Label({ id, position, props, offset = [0, 0] }: { id: string; position: Point; props: SceneProps; offset?: [number, number] }) {
-  const compact = useThree(state => state.size.width < 500);
+  const compact = useThree(state => state.size.width < (WAVE2_IDS.includes(props.moduleId) ? 660 : 500));
   const structure = props.spec.structures.find(s => s.id === id);
   if (!structure || !props.labels || !visible(id, props)) return null;
   if (compact && props.selected !== id && !(props.moduleId === 'BIO-010' && props.selected === 'bilayer' && id === 'heads')) return null;

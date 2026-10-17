@@ -2,8 +2,11 @@ import type { SceneProps } from './types';
 import { getSteps } from './content';
 import DiagramChromosomes from './DiagramChromosomes';
 import { visible } from './visibility';
+import { WAVE2_IDS } from './catalog';
+import Wave2Diagram from './wave2/Diagram';
 
 export default function Diagram(props: SceneProps) {
+  if(WAVE2_IDS.includes(props.moduleId))return <Wave2Diagram {...props}/>;
   const { spec, selected, hidden, labels, onSelect, isolate, step } = props;
   const ids = spec.structures.filter(s => visible(s.id,props));
   const mito = ['BIO-031', 'BIO-033'].includes(spec.id), chromosome = ['BIO-013', 'BIO-014', 'BIO-044'].includes(spec.id), renal = ['BIO-037', 'BIO-038'].includes(spec.id);

@@ -1,4 +1,5 @@
 import type { LessonStep, ModuleSpec } from './types';
+import { WAVE2_MODULES, getWave2Steps } from './wave2/content.ts';
 
 const syllabus = { title: 'Cambridge Biology 9700 · 2025–2027 syllabus', url: 'https://www.cambridgeinternational.org/Images/664560-2025-2027-syllabus.pdf' };
 const book = (section: string, slug: string) => ({ title: `OpenStax Biology 2e · ${section}`, url: `https://openstax.org/books/biology-2e/pages/${slug}` });
@@ -6,7 +7,7 @@ const anatomy = (section: string, slug: string) => ({ title: `OpenStax Anatomy a
 const coral = '#ee887a', amber = '#e7b466', teal = '#75cfc4', violet = '#ae9bd8', rose = '#d393ac', blue = '#83afcf';
 
 /** Original teaching text and questions. Links identify background references, not borrowed assessments. */
-export const MODULES: ModuleSpec[] = [
+export const PRIORITY_MODULES: ModuleSpec[] = [
   {
     id: 'BIO-010', title: 'Fluid mosaic membrane', level: 'AS', bundle: 'Membranes & transport', kicker: 'Topic 4 · Structure and function',
     description: 'Explore the two leaflets and the molecules that make a selective, flexible boundary.',
@@ -250,8 +251,11 @@ export const MODULES: ModuleSpec[] = [
   },
 ];
 
+export const MODULES: ModuleSpec[] = [...PRIORITY_MODULES, ...WAVE2_MODULES];
+
 /** Teaching snapshots follow the same explicit conditions as the scene. */
 export function getSteps(spec: ModuleSpec, variant: string, gradient: 'forward' | 'reverse', energy: boolean): LessonStep[] {
+  if (WAVE2_MODULES.some(module => module.id === spec.id)) return getWave2Steps(spec, variant, gradient, energy);
   if (spec.id === 'BIO-011') {
     const high = gradient === 'forward' ? 'outside' : 'cytoplasm';
     const low = gradient === 'forward' ? 'cytoplasm' : 'outside';
